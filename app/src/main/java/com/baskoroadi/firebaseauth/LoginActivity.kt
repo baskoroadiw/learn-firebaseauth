@@ -32,6 +32,10 @@ class LoginActivity : AppCompatActivity() {
             login()
         }
 
+        tv_forgot_password.setOnClickListener {
+            startActivity(Intent(this,ForgotPasswordActivity::class.java))
+        }
+
         auth = FirebaseAuth.getInstance()
     }
 
