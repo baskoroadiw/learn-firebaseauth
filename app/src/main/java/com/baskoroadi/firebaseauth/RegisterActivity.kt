@@ -37,13 +37,13 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun signUp(){
-        startProgress()
         val email = edittext_signup_email.text.toString().trim()
         val pass = edittext_signup_pass.text.toString().trim()
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)){
             Toast.makeText(this, "Lengkapi Isian", Toast.LENGTH_SHORT).show()
         }else{
+            startProgress()
             signUpProcess(email, pass)
         }
     }
