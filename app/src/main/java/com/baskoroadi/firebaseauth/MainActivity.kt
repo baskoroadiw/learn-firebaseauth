@@ -72,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         val isLogin = sharedPref.getBoolean("isLogin",false)
 
         if (!isLogin){
-            startActivity(Intent(this,LoginActivity::class.java))
             finish()
+            startActivity(Intent(this,LoginActivity::class.java))
         }
     }
 
@@ -97,8 +97,8 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
         Toast.makeText(this, "Sukses Logout", Toast.LENGTH_SHORT).show()
-        startActivity(Intent(this,LoginActivity::class.java))
         finish()
+        startActivity(Intent(this,LoginActivity::class.java))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

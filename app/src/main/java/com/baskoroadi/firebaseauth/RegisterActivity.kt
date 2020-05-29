@@ -54,8 +54,8 @@ class RegisterActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     stopProgress()
                     Toast.makeText(this, "Register Sukses", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this,LoginActivity::class.java))
                     finish()
+                    startActivity(Intent(this,LoginActivity::class.java))
                 } else {
                     stopProgress()
                     if (task.exception is FirebaseAuthWeakPasswordException){

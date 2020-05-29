@@ -62,8 +62,8 @@ class LoginActivity : AppCompatActivity() {
                         override fun run() {
                             try {
                                 sleep(1500)
-                                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                                 finish()
+                                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                             } catch (e: InterruptedException) {
                                 e.printStackTrace()
                             }
