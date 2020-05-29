@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "599841386713",
+    "firebase_url": "https://for-learn-c4a59.firebaseio.com",
+    "project_id": "for-learn-c4a59",
+    "storage_bucket": "for-learn-c4a59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599841386713:android:013d929e662468ac790ec8",
+        "android_client_info": {
+          "package_name": "com.baskoroadi.firebaseauth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599841386713-9ff18rn1alfgs6pu8li8r78a1vg29l6h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiQdtyspkpJGoat2WOfcWar8BiUWFpUfw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599841386713-9ff18rn1alfgs6pu8li8r78a1vg29l6h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
