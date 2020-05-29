@@ -27,7 +27,9 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        updateUIAkun()
+        if (auth.currentUser != null){
+            updateUIAkun()
+        }
 
         tv_send_verification.setOnClickListener {
             sendEmailVerification()
