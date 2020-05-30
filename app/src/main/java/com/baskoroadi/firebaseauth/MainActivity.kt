@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
@@ -24,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
+    private lateinit var view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         tv_send_verification.setOnClickListener {
             sendEmailVerification()
         }
+        view = findViewById(R.id.rootview_mainactivity)
     }
 
     private fun updateUIAkun(){
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         user.sendEmailVerification()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Email terkirim, mohon cek email anda", Toast.LENGTH_SHORT).show()
+                    Snackbar.make(view,"Email verifikasi terkirim, mohon cek email anda",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
                 }
             }
     }
@@ -102,8 +103,19 @@ class MainActivity : AppCompatActivity() {
             putBoolean("isLogin",false)
             commit()
         }
-        finish()
-        startActivity(Intent(this,LoginActivity::class.java))
+        Snackbar.make(view,"Berhasil Keluar",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
+        val thread: Thread = object : Thread() {
+            override fun run() {
+                try {
+                    sleep(2000)
+                    finish()
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        thread.start()
     }
 
     private fun showDialogDeleteAccount() {
@@ -139,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener { exception: Exception ->
                 Log.d(TAG, exception.toString())
                 if (exception is FirebaseAuthInvalidCredentialsException){
-                    Snackbar.make(findViewById(R.id.rootview_mainactivity),"Password yang anda masukkan salah",Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(view,"Password yang anda masukkan salah",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                 }
             }
     }
@@ -149,9 +161,19 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     sharedPrefNoLogin()
-                    Toast.makeText(this, "Akun terhapus", Toast.LENGTH_SHORT).show()
-                    finish()
-                    startActivity(Intent(this,LoginActivity::class.java))
+                    Snackbar.make(view,"Akun berhasil terhapus",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
+                    val thread: Thread = object : Thread() {
+                        override fun run() {
+                            try {
+                                sleep(2000)
+                                finish()
+                                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                            } catch (e: InterruptedException) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                    thread.start()
                 }
             }
     }

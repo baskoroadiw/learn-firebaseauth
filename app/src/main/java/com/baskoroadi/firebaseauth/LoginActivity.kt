@@ -5,12 +5,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.github.razir.progressbutton.attachTextChangeAnimator
 import com.github.razir.progressbutton.bindProgressButton
 import com.github.razir.progressbutton.hideProgress
 import com.github.razir.progressbutton.showProgress
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.layout_login.*
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         auth = FirebaseAuth.getInstance()
+        view = findViewById(R.id.rootview_login)
     }
 
     private fun login(){
@@ -44,7 +47,8 @@ class LoginActivity : AppCompatActivity() {
         val pass = editTextPassword.text.toString().trim()
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)){
-            Toast.makeText(this, "Lengkapi Isian", Toast.LENGTH_SHORT).show()
+            editTextEmail.error = "Email harus diisi"
+            editTextPassword.error = "Password harus diisi"
         }else{
             startProgress()
             loginProccess(email, pass)
@@ -55,13 +59,13 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, pass)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    Snackbar.make(view,"Selamat, anda berhasil masuk",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
                     stopProgress()
                     isLogin()
-                    Toast.makeText(this, "Login Sukses", Toast.LENGTH_SHORT).show()
                     val thread: Thread = object : Thread() {
                         override fun run() {
                             try {
-                                sleep(1500)
+                                sleep(2000)
                                 finish()
                                 startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                             } catch (e: InterruptedException) {
@@ -73,9 +77,9 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     stopProgress()
                     if (task.exception is FirebaseAuthInvalidUserException){
-                        Toast.makeText(this, "Email tidak terdaftar", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(view,"Email yang anda masukkan tidak terdaftar", Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                     }else if (task.exception is FirebaseAuthInvalidCredentialsException){
-                        Toast.makeText(this, "Email atau Password salah", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(view,"Email atau Password yang anda masukkan salah",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                     }
                 }
             }

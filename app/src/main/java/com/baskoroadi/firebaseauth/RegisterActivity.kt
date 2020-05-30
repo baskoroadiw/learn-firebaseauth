@@ -4,12 +4,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.github.razir.progressbutton.attachTextChangeAnimator
 import com.github.razir.progressbutton.bindProgressButton
 import com.github.razir.progressbutton.hideProgress
 import com.github.razir.progressbutton.showProgress
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.layout_register.*
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +35,7 @@ class RegisterActivity : AppCompatActivity() {
         buttonRegister.setOnClickListener {
             signUp()
         }
-
+        view = findViewById(R.id.rootview_register)
     }
 
     private fun signUp(){
@@ -41,7 +43,8 @@ class RegisterActivity : AppCompatActivity() {
         val pass = edittext_signup_pass.text.toString().trim()
 
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)){
-            Toast.makeText(this, "Lengkapi Isian", Toast.LENGTH_SHORT).show()
+            edittext_signup_email.error = "Email harus diisi"
+            edittext_signup_pass.error = "Password harus diisi"
         }else{
             startProgress()
             signUpProcess(email, pass)
@@ -53,17 +56,27 @@ class RegisterActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     stopProgress()
-                    Toast.makeText(this, "Register Sukses", Toast.LENGTH_SHORT).show()
-                    finish()
-                    startActivity(Intent(this,LoginActivity::class.java))
+                    Snackbar.make(view,"Selamat, anda berhasil mendaftar",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
+                    val thread: Thread = object : Thread() {
+                        override fun run() {
+                            try {
+                                sleep(2000)
+                                finish()
+                                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+                            } catch (e: InterruptedException) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                    thread.start()
                 } else {
                     stopProgress()
                     if (task.exception is FirebaseAuthWeakPasswordException){
-                        Toast.makeText(this, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(view,"Masukkan password minimal 6 karakter",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                     }else if (task.exception is FirebaseAuthInvalidCredentialsException){
-                        Toast.makeText(this, "Email tidak valid", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(view,"Email yang anda masukkan tidak valid",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                     }else if (task.exception is FirebaseAuthUserCollisionException){
-                        Toast.makeText(this, "Email sudah terdaftar", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(view,"Email yang anda masukkan sudah terdaftar",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                     }
                 }
             }

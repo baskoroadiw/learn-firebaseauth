@@ -4,18 +4,20 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.TextUtils
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.github.razir.progressbutton.attachTextChangeAnimator
 import com.github.razir.progressbutton.bindProgressButton
 import com.github.razir.progressbutton.hideProgress
 import com.github.razir.progressbutton.showProgress
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.layout_forgot_password.*
 
 class ForgotPasswordActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var view: View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +29,14 @@ class ForgotPasswordActivity : AppCompatActivity() {
         button_send_email_forgot.setOnClickListener {
             forgotPassword()
         }
+        view = findViewById(R.id.rootview_forgot)
     }
 
     private fun forgotPassword(){
         val email = editTextEmail_forgot.text.toString().trim()
 
         if (TextUtils.isEmpty(email)){
-            editTextEmail_forgot.error = "Harus diisi"
+            editTextEmail_forgot.error = "Password harus diisi"
         }
         else{
             startProgress()
@@ -41,9 +44,19 @@ class ForgotPasswordActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     stopProgress()
-                    Toast.makeText(this, "Email terkirim, mohon cek email anda", Toast.LENGTH_SHORT).show()
-                    finish()
-                    startActivity(Intent(this,LoginActivity::class.java))
+                    Snackbar.make(view,"Email terkirim, mohon cek email anda", Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
+                    val thread: Thread = object : Thread() {
+                        override fun run() {
+                            try {
+                                sleep(2000)
+                                finish()
+                                startActivity(Intent(this@ForgotPasswordActivity, LoginActivity::class.java))
+                            } catch (e: InterruptedException) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                    thread.start()
                 }
             }
         }
