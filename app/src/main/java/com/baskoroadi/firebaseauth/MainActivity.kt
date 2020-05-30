@@ -4,18 +4,24 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_reauthenticate.view.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val TAG = MainActivity::class.java.simpleName
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
 
@@ -96,9 +102,66 @@ class MainActivity : AppCompatActivity() {
             putBoolean("isLogin",false)
             commit()
         }
-        Toast.makeText(this, "Sukses Logout", Toast.LENGTH_SHORT).show()
         finish()
         startActivity(Intent(this,LoginActivity::class.java))
+    }
+
+    private fun showDialogDeleteAccount() {
+        val builder = AlertDialog.Builder(this)
+
+        val inflater = this.layoutInflater
+
+        val dialogView = inflater.inflate(R.layout.layout_reauthenticate, null)
+
+        builder.setTitle("Konfimasi Akun")
+
+        builder.setView(dialogView)
+            .setPositiveButton("Continue") { dialog, id ->
+                val pass = dialogView.edittext_reauth_pass.text.toString()
+                reauthenticate(pass)
+            }
+            .setNegativeButton("Cancel") { dialog, id ->
+                    dialog.dismiss()
+                }
+        builder.create().show()
+    }
+
+    private fun reauthenticate(password:String){
+        val email = user.email.toString()
+
+        val credential = EmailAuthProvider
+            .getCredential(email, password)
+
+        user.reauthenticate(credential)
+            .addOnSuccessListener { task ->
+                deleteAccount()
+            }
+            .addOnFailureListener { exception: Exception ->
+                Log.d(TAG, exception.toString())
+                if (exception is FirebaseAuthInvalidCredentialsException){
+                    Snackbar.make(findViewById(R.id.rootview_mainactivity),"Password yang anda masukkan salah",Snackbar.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun deleteAccount(){
+        user.delete()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    sharedPrefNoLogin()
+                    Toast.makeText(this, "Akun terhapus", Toast.LENGTH_SHORT).show()
+                    finish()
+                    startActivity(Intent(this,LoginActivity::class.java))
+                }
+            }
+    }
+
+    private fun sharedPrefNoLogin(){
+        val sharedPref = this.getSharedPreferences("LoginPref",Context.MODE_PRIVATE)?: return
+        with(sharedPref.edit()){
+            putBoolean("isLogin",false)
+            commit()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -109,6 +172,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menu_logout -> showDialogLogout()
+            R.id.menu_hapusakun -> showDialogDeleteAccount()
         }
 
         return super.onOptionsItemSelected(item)

@@ -7,4 +7,8 @@
         android:icon="@drawable/ic_signout_white_24dp"
         android:title="Logout"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_hapusakun"
+        android:title="Hapus Akun"
+        app:showAsAction="never" />
 </menu>
