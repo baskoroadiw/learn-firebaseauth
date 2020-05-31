@@ -61,8 +61,7 @@ class RegisterActivity : AppCompatActivity() {
                         override fun run() {
                             try {
                                 sleep(2000)
-                                finish()
-                                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+                                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
                             } catch (e: InterruptedException) {
                                 e.printStackTrace()
                             }
