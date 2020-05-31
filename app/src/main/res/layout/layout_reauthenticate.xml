@@ -7,12 +7,16 @@
     >
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/signup_text_margin_top">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edittext_reauth_pass"
             style="@style/modifiedEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="@string/login_password_hint"
             android:inputType="textPassword"
             android:maxLines="1" />
