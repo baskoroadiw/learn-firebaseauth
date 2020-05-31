@@ -1,16 +1,18 @@
 package com.baskoroadi.firebaseauth
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showDialogLogout() {
-        val builder = AlertDialog.Builder(this, R.style.ThemeOverlay_AppCompat_Dialog_Alert)
+        val builder = MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_MaterialComponents_Dialog_Alert)
             .setTitle("Logout")
             .setMessage("Ingin Logout?")
             .setPositiveButton("Ya") { dialog, which ->
@@ -126,23 +128,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showDialogDeleteAccount() {
-        val builder = AlertDialog.Builder(this)
-
         val inflater = this.layoutInflater
 
         val dialogView = inflater.inflate(R.layout.layout_reauthenticate, null)
 
-        builder.setTitle("Konfimasi Akun")
-
-        builder.setView(dialogView)
-            .setPositiveButton("Continue") { dialog, id ->
-                val pass = dialogView.edittext_reauth_pass.text.toString()
-                reauthenticate(pass)
-            }
-            .setNegativeButton("Cancel") { dialog, id ->
+        val builder = MaterialAlertDialogBuilder(this)
+            with(builder){
+                setView(dialogView)
+                setTitle("Konfimasi Akun")
+                setPositiveButton("Continue",null)
+                setNegativeButton("Cancel") { dialog, id ->
                     dialog.dismiss()
                 }
-        builder.create().show()
+            }
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+
+        val button = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+        button.setOnClickListener { dialog ->
+            val pass = dialogView.edittext_reauth_pass.text.toString().trim()
+
+            if (TextUtils.isEmpty(pass)){
+                dialogView.edittext_reauth_pass.error = "Password harus diisi"
+            }else{
+                reauthenticate(pass)
+                alertDialog.dismiss()
+            }
+        }
     }
 
     private fun reauthenticate(password:String){
