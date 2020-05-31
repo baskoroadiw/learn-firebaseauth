@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -40,7 +39,12 @@ class MainActivity : AppCompatActivity() {
         tv_send_verification.setOnClickListener {
             sendEmailVerification()
         }
+
         view = findViewById(R.id.rootview_mainactivity)
+
+        button_refresh.setOnClickListener {
+            reloadStatusVerification()
+        }
     }
 
     private fun updateUIAkun(){
@@ -58,6 +62,8 @@ class MainActivity : AppCompatActivity() {
                 statusVerified = "Sudah Terverifikasi"
                 tv_verified_akun.setTextColor(Color.GREEN)
                 tv_send_verification.visibility = View.GONE
+                tv_refresh.visibility = View.GONE
+                button_refresh.visibility = View.GONE
             }
 
             tv_email_akun.text = "Email\t\t\t\t\t\t\t: $email"
@@ -149,7 +155,6 @@ class MainActivity : AppCompatActivity() {
                 deleteAccount()
             }
             .addOnFailureListener { exception: Exception ->
-                Log.d(TAG, exception.toString())
                 if (exception is FirebaseAuthInvalidCredentialsException){
                     Snackbar.make(view,"Password yang anda masukkan salah",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.RED).show()
                 }
@@ -184,6 +189,14 @@ class MainActivity : AppCompatActivity() {
             putBoolean("isLogin",false)
             commit()
         }
+    }
+
+    private fun reloadStatusVerification(){
+        user.reload()
+            .addOnSuccessListener { task->
+                updateUIAkun()
+                Snackbar.make(view,"Status akun berhasil terupdate",Snackbar.LENGTH_SHORT).setBackgroundTint(Color.GREEN).show()
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
