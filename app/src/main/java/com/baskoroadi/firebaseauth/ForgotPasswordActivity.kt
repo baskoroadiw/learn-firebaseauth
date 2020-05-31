@@ -39,7 +39,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         val email = editTextEmail_forgot.text.toString().trim()
 
         if (TextUtils.isEmpty(email)){
-            editTextEmail_forgot.error = "Password harus diisi"
+            editTextEmail_forgot.error = "Email harus diisi"
         }
         else{
             startProgress()
